@@ -20,14 +20,14 @@ function Mapping() {
     const [praySuccess, setPraySuccess] = useState(false)
 
     useEffect(() => {
-        console.log("Start Code")
+        // console.log("Start Code")
 
         // curl -X GET -H 'Authorization: Token 7a375b52bdc410eebbc878ed3e58b2e94a8cb607' 
         // https://lambda-treasure-hunt.herokuapp.com/api/adv/init/
         axiosWithAuth()
             .get('https://lambda-treasure-hunt.herokuapp.com/api/adv/init/')
             .then(res => {
-                console.log(res.data)
+                // console.log(res.data)
                 setServerData(res.data)
 
                 // Change (60, 60) into workable numbers
@@ -51,7 +51,7 @@ function Mapping() {
     // -H "Content-Type: application/json" -d '{"direction":"n"}' 
     // https://lambda-treasure-hunt.herokuapp.com/api/adv/move/
     const travel = direction => {
-        console.log("Traveling", direction)
+        // console.log("Traveling", direction)
         axiosWithAuth()
             .post('https://lambda-treasure-hunt.herokuapp.com/api/adv/move/', direction)
             .then(res => {
@@ -180,7 +180,7 @@ function Mapping() {
             })
     }
 
-    console.log("ROADS", roads)
+    // console.log("ROADS", roads)
 
     return (
         <Container>

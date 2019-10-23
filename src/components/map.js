@@ -41,7 +41,8 @@ function Mapping() {
                 // Change (60, 60) into workable numbers
                 const xCoordinate = res.data.coordinates.slice(1, -1).split(',')[0]
                 const yCoordinate = res.data.coordinates.slice(1, -1).split(',')[1]
-                setRooms([...rooms, { "x": xCoordinate, "y": yCoordinate }])
+                const newRoomCoordinate = { "x": xCoordinate, "y": yCoordinate }
+                setRooms([...rooms, newRoomCoordinate])
                 // Set Current ID to change color
                 setCurrentRoomCoordinate([{ "x": xCoordinate, "y": yCoordinate }])
                 setCurrentID(res.data.room_id)
@@ -66,14 +67,19 @@ function Mapping() {
             setServerData(res.data)
             const xCoordinate = res.data.coordinates.slice(1, -1).split(',')[0]
             const yCoordinate = res.data.coordinates.slice(1, -1).split(',')[1]
-            setRooms([...rooms, { "x": xCoordinate, "y": yCoordinate }])
-            setCurrentRoomCoordinate([{ "x": xCoordinate, "y": yCoordinate }])
+            const newRoomCoordinate = { "x": xCoordinate, "y": yCoordinate }
+            setRooms([...rooms, newRoomCoordinate])
+            setRoads([...roads, ...currentRoomCoordinate, newRoomCoordinate])
+            setCurrentRoomCoordinate([newRoomCoordinate])
             setCurrentID(res.data.room_id)
+
         })
         .catch(err => {
             console.log(err)
         })
     }
+
+    console.log("ROADS", roads)
 
     return (
         <Container>
@@ -81,9 +87,10 @@ function Mapping() {
                 <FlexibleXYPlot width={500} height={500}>
                     <MarkSeries data={rooms} />
                     {serverData.room_id === currentID && <MarkSeries data={currentRoomCoordinate} color="red" />}
-                    {roads.map(road => {
-                        return <LineSeries data={roads} color="#59c2fe" />;
-                    })}
+                    {/* {roads.map(road => {
+                        return <LineSeries data={roads} color="black" />;
+                    })} */}
+                    <LineSeries data={roads} color="black" />
 
                 </FlexibleXYPlot>
             </ID>

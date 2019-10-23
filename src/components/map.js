@@ -255,20 +255,17 @@ const Container = styled.section`
   height: 0 auto;
   display: flex;
   flex-direction: flex-start;
-  justify-content: space-between;
-  margin-left: 20px;
+  justify-content: space-around;
 `;
 
 const ID = styled.div`
   border: 5px dashed #fe50c2;
-  padding-right: 40px;
   padding-top: 25px;
-  width:60%
+  width:50%
 `;
 
 const Game = styled.div`
-  padding: 0 5% 0 3%;
-  width:40%
+  width:30%
 `;
 
 

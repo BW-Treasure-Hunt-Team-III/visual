@@ -214,6 +214,7 @@ function Mapping() {
         .catch(err => {
             console.log(err)
         })
+
     }
 
     const validProof = (lastProofVal, proof) => {
@@ -242,15 +243,17 @@ function Mapping() {
     // -H "Content-Type: application/json" 
     // -d '{"proof":new_proof}' https://lambda-treasure-hunt.herokuapp.com/api/bc/mine/
 
-    const mineCoin = () => {
-        while (true) {
+    const mineCoin = async () => {
+        //while (true) {
             //Get the last proof from the server
             getTheLastProof()
             let response = lastProof;
-            newProof = proofOfWork(response)
+            console.log('res', lastProof)
+            let newProof = proofOfWork(response)
 
-            mine(new_proof)
-        }
+
+            mine(newProof)
+        //}
     }
 
 
@@ -269,7 +272,7 @@ function Mapping() {
         })
     }
 
-    // console.log("ROADS", roads)
+    console.log(lastProof)
 
     return (
         <Container>

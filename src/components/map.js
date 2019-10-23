@@ -35,9 +35,12 @@ function Mapping() {
             .then(res => {
                 console.log(res.data)
                 setCurrentRoom(res.data)
-                let cordX = parseInt(res.data.coordinates[1])
-                let cordY = parseInt(res.data.coordinates[2])
-                console.log(cordX, cordY)
+                // var streetAddress = addy.split(',')[0];
+                // Split by a comma
+                const xCoordinate = res.data.coordinates.slice(1, -1).split(',')[0]
+                const yCoordinate = res.data.coordinates.slice(1, -1).split(',')[1]
+                setRooms([...rooms, {"x": xCoordinate, "y": yCoordinate}])
+
             })
             .catch(err => {
                 console.log(err)

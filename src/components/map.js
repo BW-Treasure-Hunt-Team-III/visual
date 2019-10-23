@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { sha256} from 'js-sha256';
+import { Persist } from 'react-persist'
 import axios from 'axios'
 import axiosWithAuth from '../auth/auth';
 import Timer from 'react-compound-timer';
@@ -21,6 +22,7 @@ function Mapping() {
     const [praySuccess, setPraySuccess] = useState(false)
     const [lastProof, setLastProof] = useState(0);
     const [difficulty, setDifficulty] = useState(0)
+
 
     useEffect(() => {
         // console.log("Start Code")
@@ -68,6 +70,7 @@ function Mapping() {
                 setRoads([...roads, ...currentRoomCoordinate, newRoomCoordinate])
                 setCurrentRoomCoordinate([newRoomCoordinate])
                 setCurrentID(res.data.room_id)
+
 
             })
             .catch(err => {
@@ -299,6 +302,40 @@ function Mapping() {
                     <LineSeries data={roads} color="black" style={{ fill: 'none' }} />
 
                 </FlexibleXYPlot>
+                <Persist 
+                    name="roads" 
+                    data={roads} 
+                    debounce={500} 
+                    onMount={(data) => setRoads(data)}
+                />
+
+                <Persist 
+                    name="rooms" 
+                    data={rooms} 
+                    debounce={500} 
+                    onMount={(data) => setRooms(data)}
+                />
+
+                <Persist 
+                    name="currentRoomCoordinate" 
+                    data={currentRoomCoordinate} 
+                    debounce={500} 
+                    onMount={(data) => setCurrentRoomCoordinate(data)}
+                />
+
+                <Persist 
+                    name="currentID" 
+                    data={currentID} 
+                    debounce={500} 
+                    onMount={(data) => setCurrentID(data)}
+                />
+
+                <Persist 
+                    name="serverData" 
+                    data={serverData} 
+                    debounce={500} 
+                    onMount={(data) => setServerData(data)}
+                />
             </ID>
             <Game>
                 <h1>Legend</h1>

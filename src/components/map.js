@@ -217,12 +217,14 @@ function Mapping() {
 
     }
 
-    const validProof = (lastProofVal, proof) => {
+    const validProof = (lastProofVal, proof, difficulty) => {
         const lastProofStr = lastProofVal.toString()
         const proofToStr = proof.toString();
 
         const lastHash = sha256(lastProofStr);
         const guessHash = sha256(lastProofVal+proofToStr)
+
+        console.log(lastHash);
 
 
         const hashToCheck = guessHash.slice(0, difficulty)
@@ -231,12 +233,15 @@ function Mapping() {
         return leadingZeros === hashToCheck
     }
 
-    const proofOfWork = (lastProofVal) => {
+    const proofOfWork = (lastProofVal, difficulty) => {
         let proof = 0
     
-        while (!validProof(lastProofVal, proof)) {
+        while (!validProof(lastProofVal, proof, difficulty)) {
             proof += 1
         }
+
+        return proof
+
     }
 
     // curl -X POST -H 'Authorization: Token 7a375b52bdc410eebbc878ed3e58b2e94a8cb607' 
@@ -244,16 +249,24 @@ function Mapping() {
     // -d '{"proof":new_proof}' https://lambda-treasure-hunt.herokuapp.com/api/bc/mine/
 
     const mineCoin = () => {
-        //while (true) {
+
+        let newProof;
+
             //Get the last proof from the server
-            getTheLastProof()
+            axiosWithAuth()
+            .get('https://lambda-treasure-hunt.herokuapp.com/api/bc/last_proof')
+            .then(res => {
+           
+                setLastProof(res.data.proof)
+              
+                newProof = proofOfWork(res.data.proof, res.data.difficulty)
+                mine(newProof)
 
-            console.log('res', lastProof)
-            // let newProof = proofOfWork(lastProof)
+            })
+            .catch(err => {
+                console.log(err)
+            })
 
-
-            // mine(newProof)
-        //}
     }
 
 
@@ -340,6 +353,7 @@ function Mapping() {
                 <button onClick={mineCoin}>Mine</button>
                 <h2>Get Coin Balance</h2>
                 <button onClick={getCoinBalance}>Get</button>
+
             </Game>
 
         </Container>

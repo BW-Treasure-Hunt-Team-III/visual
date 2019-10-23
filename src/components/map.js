@@ -196,13 +196,18 @@ function Mapping() {
         console.log("SAVE DATA")
 
         if(rooms.length > 0 && roads.length > 0) {
-            const roomString = JSON.stringify(rooms)
-            const roadString = JSON.stringify(roads)
-            localStorage.setItem("storedRooms", roomString)
-            localStorage.setItem("storedRoads", roadString)
-            setSaveSuccess(true)
-            console.log(roomString)
-            console.log(roadString)
+            if(localStorage.getItem("storedRooms") && localStorage.getItem("storedRoads")) {
+                const storedRooms =  JSON.parse(localStorage.getItem("storedRooms"))
+                const storedRoads = JSON.parse(localStorage.getItem("storedRoads"))
+
+                const fusedRooms = JSON.stringify(rooms.concat(storedRooms))
+                const fusedRoads = JSON.stringify(roads.concat(storedRoads))
+                console.log("FUSED ROOMS", fusedRooms, "FUSED ROADS", fusedRoads)
+
+                localStorage.setItem("storedRooms", fusedRooms)
+                localStorage.setItem("storedRoads", fusedRoads)
+                setSaveSuccess(true)
+            }
         }
     }
 
@@ -212,15 +217,15 @@ function Mapping() {
         console.log("LOAD DATA")
 
         if(localStorage.getItem("storedRooms") && localStorage.getItem("storedRoads")) {
-            const storedRooms =  localStorage.getItem("storedRooms")
-            const storedRoads = localStorage.getItem("storedRoads")
-            console.log(storedRooms)
-            console.log(storedRoads)
-            setRooms(storedRooms)
-            setRoads(storedRoads)
-        }
-        
-        
+            const storedRooms =  JSON.parse(localStorage.getItem("storedRooms"))
+            const storedRoads = JSON.parse(localStorage.getItem("storedRoads"))
+
+            const fusedRooms = rooms.concat(storedRooms)
+            const fusedRoads = roads.concat(storedRoads)
+            
+            setRooms(fusedRooms)
+            setRoads(fusedRoads)
+        }  
     }
 
     return (

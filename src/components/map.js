@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { sha256} from 'js-sha256';
 import axios from 'axios'
 import axiosWithAuth from '../auth/auth';
 import Timer from 'react-compound-timer';
@@ -18,6 +19,8 @@ function Mapping() {
     const [status, setStatus] = useState({})
     const [nameSuccess, setNameSuccess] = useState(false)
     const [praySuccess, setPraySuccess] = useState(false)
+    const [lastProof, setLastProof] = useState(0);
+    const [difficulty, setDifficulty] = useState(0)
 
     useEffect(() => {
         // console.log("Start Code")
@@ -203,7 +206,62 @@ function Mapping() {
         axiosWithAuth()
         .get('https://lambda-treasure-hunt.herokuapp.com/api/bc/last_proof')
         .then(res => {
-            console.log(res)
+       
+            setLastProof(res.data.proof)
+            setDifficulty(res.data.difficulty)
+
+        })
+        .catch(err => {
+            console.log(err)
+        })
+    }
+
+    const validProof = (lastProofVal, proof) => {
+        const lastProofStr = lastProofVal.toString()
+        const proofToStr = proof.toString();
+
+        const lastHash = sha256(lastProofStr);
+        const guessHash = sha256(lastProofVal+proofToStr)
+
+
+        const hashToCheck = guessHash.slice(0, difficulty)
+        const leadingZeros = Array(difficulty).fill(0).join('')
+    
+        return leadingZeros === hashToCheck
+    }
+
+    const proofOfWork = (lastProofVal) => {
+        let proof = 0
+    
+        while (!validProof(lastProofVal, proof)) {
+            proof += 1
+        }
+    }
+
+    // curl -X POST -H 'Authorization: Token 7a375b52bdc410eebbc878ed3e58b2e94a8cb607' 
+    // -H "Content-Type: application/json" 
+    // -d '{"proof":new_proof}' https://lambda-treasure-hunt.herokuapp.com/api/bc/mine/
+
+    const mineCoin = () => {
+        while (true) {
+            //Get the last proof from the server
+            getTheLastProof()
+            let response = lastProof;
+            newProof = proofOfWork(response)
+
+            mine(new_proof)
+        }
+    }
+
+
+    // curl -X GET -H 'Authorization: Token 7a375b52bdc410eebbc878ed3e58b2e94a8cb607' 
+    // https://lambda-treasure-hunt.herokuapp.com/api/bc/get_balance/
+    const getCoinBalance = () => {
+        axiosWithAuth()
+        .get('https://lambda-treasure-hunt.herokuapp.com/api/bc/get_balance/')
+        .then(res => {
+    
+            console.log(res.data)
 
         })
         .catch(err => {
@@ -274,8 +332,11 @@ function Mapping() {
                 <h2>Name Changer</h2>
                 {nameSuccess ? <p>You have a name now, but at what cost?</p> : <p>A girl has no name.</p>}
                 <button onClick={changeName}>Change Your Name using 1000G</button>
-                <h2>Get The Last Proof</h2>
-                <button onClick={getTheLastProof}>Get the last proof</button>
+
+                <h2>Mine</h2>
+                <button onClick={mineCoin}>Mine</button>
+                <h2>Get Coin Balance</h2>
+                <button onClick={getCoinBalance}>Get</button>
             </Game>
 
         </Container>

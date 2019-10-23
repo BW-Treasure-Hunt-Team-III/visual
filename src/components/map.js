@@ -88,9 +88,9 @@ function Mapping() {
                     <MarkSeries data={rooms} />
                     {serverData.room_id === currentID && <MarkSeries data={currentRoomCoordinate} color="red" />}
                     {/* {roads.map(road => {
-                        return <LineSeries data={roads} color="black" />;
+                        return <LineSeries data={road} color="black" style={{ fill: 'none' }}/>;
                     })} */}
-                    <LineSeries data={roads} color="black" />
+                    <LineSeries data={roads} color="black" style={{ fill: 'none' }} />
 
                 </FlexibleXYPlot>
             </ID>

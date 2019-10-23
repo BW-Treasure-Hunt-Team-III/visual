@@ -12,6 +12,7 @@ import {
 function Mapping() {
     const [rooms, setRooms] = useState([]);
     const [roads, setRoads] = useState([]);
+    const [specialRooms, setSpecialRooms] = useState([])
     const [serverData, setServerData] = useState([])
     const [currentRoomCoordinate, setCurrentRoomCoordinate] = useState([])
     const [currentID, setCurrentID] = useState("")
@@ -66,7 +67,6 @@ function Mapping() {
             .post('https://lambda-treasure-hunt.herokuapp.com/api/adv/move/', direction)
             .then(res => {
                 console.log(res)
-                console.log("cooldown", res.data.cooldown)
                 setServerData(res.data)
                 const xCoordinate = res.data.coordinates.slice(1, -1).split(',')[0]
                 const yCoordinate = res.data.coordinates.slice(1, -1).split(',')[1]
@@ -75,6 +75,10 @@ function Mapping() {
                 setRoads([...roads, ...currentRoomCoordinate, newRoomCoordinate])
                 setCurrentRoomCoordinate([newRoomCoordinate])
                 setCurrentID(res.data.room_id)
+
+                if(res.data.title === "Shop") {
+                    setSpecialRooms([...specialRooms, newRoomCoordinate])
+                }
 
             })
             .catch(err => {
@@ -198,6 +202,7 @@ function Mapping() {
         if(rooms.length > 0 && roads.length > 0) {
                 localStorage.setItem("storedRooms", JSON.stringify(rooms))
                 localStorage.setItem("storedRoads", JSON.stringify(roads))
+                localStorage.setItem("storedSpecial", JSON.stringify(specialRooms))
                 setSaveSuccess(true)
         }
     }
@@ -210,9 +215,11 @@ function Mapping() {
         if(localStorage.getItem("storedRooms") && localStorage.getItem("storedRoads")) {
             const storedRooms =  JSON.parse(localStorage.getItem("storedRooms"))
             const storedRoads = JSON.parse(localStorage.getItem("storedRoads"))
+            const storedSpecial = JSON.parse(localStorage.getItem("storedSpecial"))
 
             setRooms(storedRooms)
             setRoads(storedRoads)
+            setSpecialRooms(storedSpecial)
         }  
     }
 
@@ -222,6 +229,7 @@ function Mapping() {
                 <FlexibleXYPlot width={500} height={500}>
                     <MarkSeries data={rooms} />
                     {serverData.room_id === currentID && <MarkSeries data={currentRoomCoordinate} color="red" />}
+                    {specialRooms && <MarkSeries data={specialRooms} color="purple" size="10"/>}
                     {/* {roads.map(road => {
                         return <LineSeries data={road} color="black" style={{ fill: 'none' }}/>;
                     })} */}

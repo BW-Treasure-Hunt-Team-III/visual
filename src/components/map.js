@@ -18,6 +18,7 @@ function Mapping() {
     const [status, setStatus] = useState({})
     const [nameSuccess, setNameSuccess] = useState(false)
     const [praySuccess, setPraySuccess] = useState(false)
+    const [saveSuccess, setSaveSuccess] = useState(false)
 
     useEffect(() => {
         
@@ -194,12 +195,31 @@ function Mapping() {
     const saveData = () => {
         console.log("SAVE DATA")
 
+        if(rooms.length > 0 && roads.length > 0) {
+            const roomString = JSON.stringify(rooms)
+            const roadString = JSON.stringify(roads)
+            localStorage.setItem("storedRooms", roomString)
+            localStorage.setItem("storedRoads", roadString)
+            setSaveSuccess(true)
+            console.log(roomString)
+            console.log(roadString)
+        }
     }
 
     // Stores what we have inside rooms and roads inside localStorage
     // We will need to stringify the data using JSON.stringify()
     const loadData = () => {
         console.log("LOAD DATA")
+
+        if(localStorage.getItem("storedRooms") && localStorage.getItem("storedRoads")) {
+            const storedRooms =  localStorage.getItem("storedRooms")
+            const storedRoads = localStorage.getItem("storedRoads")
+            console.log(storedRooms)
+            console.log(storedRoads)
+            setRooms(storedRooms)
+            setRoads(storedRoads)
+        }
+        
         
     }
 
@@ -219,8 +239,10 @@ function Mapping() {
             <Game>
                 <h1>Legend</h1>
                 <p>Red is current position, Blue is visited rooms.</p>
-                <button onClick={loadData}>Load Data</button>
+                {saveSuccess ? <p>Game Saved Successfully.</p> : <p>Game not saved yet.</p>}
                 <button onClick={saveData}>Save Progress</button>
+                <button onClick={loadData}>Load Data</button>
+
                 <h2>Title</h2>
                 {serverData.coordinates && <p><b>Current Coordinates:</b> {serverData.coordinates}</p>}
                 {serverData.title && <p>{serverData.title}</p>}
@@ -230,8 +252,10 @@ function Mapping() {
                     <Timer.Seconds />
                 </Timer>
                 {serverData.cooldown && <p>Cooldown: {serverData.cooldown} seconds</p>}
+
                 <h2>Message</h2>
                 {serverData.messages && serverData.messages.map(message => <p>{message}</p>)}
+
                 <h2>Exits</h2>
                 {serverData.exits && serverData.exits.map(direction => {
                     if (direction === "n") {
@@ -244,12 +268,14 @@ function Mapping() {
                         return <button onClick={() => travel({ "direction": "w" })}>Travel West</button>
                     }
                 })}
+
                 <h2>Items</h2>
                 {serverData.items && <ul>{serverData.items.map(item => <li>{item}</li>)}</ul>}
                 {serverData.items && <button onClick={pickup}>Pickup Items</button>}
                 {serverData.items && <button onClick={drop}>Drop Items</button>}
                 {serverData.items && <button onClick={sell}>Sell Items</button>}
                 {serverData.items && <button onClick={confirmSell}>Confirm Sell Items</button>}
+
                 <h2>Hero Info</h2>
                 {status.name && <p>
                     {`Name: ${status.name}, 
@@ -263,6 +289,7 @@ function Mapping() {
                 <button onClick={viewStatus}>Check Status</button>
                 <button onClick={pray}>Pray to the Gawdess</button>
                 {praySuccess && <p>The Gawdess is pleased. Now, get back to werk!</p>}
+                
                 <h2>Name Changer</h2>
                 {nameSuccess ? <p>You have a name now, but at what cost?</p> : <p>A girl has no name.</p>}
                 <button onClick={changeName}>Change Your Name using 1000G</button>

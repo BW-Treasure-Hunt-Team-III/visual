@@ -155,7 +155,7 @@ function Mapping() {
 
     const changeName = () => {
         axiosWithAuth()
-            .post('https://lambda-treasure-hunt.herokuapp.com/api/adv/status/', { "name": "[Nguyen Anh Vo]" })
+            .post('https://lambda-treasure-hunt.herokuapp.com/api/adv/status/', { "name": "[Johny Appleseed]" })
             .then(res => {
                 console.log(res)
                 setNameSuccess(true)
@@ -180,6 +180,37 @@ function Mapping() {
             })
     }
 
+    //curl -X POST -H 'Authorization: Token 7a375b52bdc410eebbc878ed3e58b2e94a8cb607' 
+    //-H "Content-Type: application/json" 
+    //-d '{"proof":new_proof}' https://lambda-treasure-hunt.herokuapp.com/api/bc/mine/
+
+    const mine = (new_proof) => {
+        axiosWithAuth()
+        .post('https://lambda-treasure-hunt.herokuapp.com/api/bc/mine/', { "proof": new_proof })
+        .then(res => {
+            console.log(res)
+
+        })
+        .catch(err => {
+            console.log(err)
+        })
+    }
+
+    // curl -X GET -H 'Authorization: Token 7a375b52bdc410eebbc878ed3e58b2e94a8cb607' 
+    // https://lambda-treasure-hunt.herokuapp.com/api/bc/last_proof
+
+    const getTheLastProof = () => {
+        axiosWithAuth()
+        .get('https://lambda-treasure-hunt.herokuapp.com/api/bc/last_proof')
+        .then(res => {
+            console.log(res)
+
+        })
+        .catch(err => {
+            console.log(err)
+        })
+    }
+
     // console.log("ROADS", roads)
 
     return (
@@ -200,6 +231,7 @@ function Mapping() {
                 <p>Red is current position, Blue is visited rooms.</p>
                 <h2>Title</h2>
                 {serverData.title && <p>{serverData.title}</p>}
+                {serverData.title && <p>{serverData.room_id}</p>}
                 {serverData.description && <p>{serverData.description}</p>}
                 <h2>Cooldown Time</h2>
                 Timer: <Timer>
@@ -242,6 +274,8 @@ function Mapping() {
                 <h2>Name Changer</h2>
                 {nameSuccess ? <p>You have a name now, but at what cost?</p> : <p>A girl has no name.</p>}
                 <button onClick={changeName}>Change Your Name using 1000G</button>
+                <h2>Get The Last Proof</h2>
+                <button onClick={getTheLastProof}>Get the last proof</button>
             </Game>
 
         </Container>

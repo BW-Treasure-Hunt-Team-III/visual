@@ -24,6 +24,8 @@ function Mapping() {
     const [serverData, setServerData] = useState([])
     const [currentRoomCoordinate, setCurrentRoomCoordinate] = useState([])
     const [currentID, setCurrentID] = useState("")
+    const [status, setStatus] = useState({})
+    const [nameSuccess, setNameSuccess] = useState(false)
 
     useEffect(() => {
         console.log("Start Code")
@@ -79,6 +81,99 @@ function Mapping() {
         })
     }
 
+    // curl -X POST -H 'Authorization: Token 7a375b52bdc410eebbc878ed3e58b2e94a8cb607' -H 
+    // "Content-Type: application/json" -d '{"name":"treasure"}' 
+    // https://lambda-treasure-hunt.herokuapp.com/api/adv/take/
+    const pickup = () => {
+        axiosWithAuth()
+        .post('https://lambda-treasure-hunt.herokuapp.com/api/adv/take/', {"name":"treasure"})
+        .then(res => {
+            console.log(res)
+            setServerData(res.data)
+        })
+        .catch(err => {
+            console.log(err)
+        })
+    }
+
+    // You may drop items with the following command:
+    // curl -X POST -H 'Authorization: Token 7a375b52bdc410eebbc878ed3e58b2e94a8cb607' 
+    // -H "Content-Type: application/json" -d '{"name":"treasure"}' 
+    // https://lambda-treasure-hunt.herokuapp.com/api/adv/drop/
+    const drop = () => {
+        axiosWithAuth()
+        .post('https://lambda-treasure-hunt.herokuapp.com/api/adv/drop/', {"name":"treasure"})
+        .then(res => {
+            console.log(res)
+            setServerData(res.data)
+        })
+        .catch(err => {
+            console.log(err)
+        })
+    }
+
+    // Sell Treasure at Shop
+    // curl -X POST -H 'Authorization: Token 7a375b52bdc410eebbc878ed3e58b2e94a8cb607' -H 
+    // "Content-Type: application/json" -d '{"name":"treasure"}' 
+    // https://lambda-treasure-hunt.herokuapp.com/api/adv/sell/
+    const sell = () => {
+        axiosWithAuth()
+        .post('https://lambda-treasure-hunt.herokuapp.com/api/adv/sell/', {"name":"treasure"})
+        .then(res => {
+            console.log(res)
+            setServerData(res.data)
+        })
+        .catch(err => {
+            console.log(err)
+        })
+    }
+
+    // curl -X POST -H 'Authorization: Token 7a375b52bdc410eebbc878ed3e58b2e94a8cb607' -H 
+    // "Content-Type: application/json" -d '{"name":"treasure", "confirm":"yes"}' 
+    // https://lambda-treasure-hunt.herokuapp.com/api/adv/sell/
+    const confirmSell = () => {
+        axiosWithAuth()
+        .post('https://lambda-treasure-hunt.herokuapp.com/api/adv/sell/', {"name":"treasure", "confirm":"yes"})
+        .then(res => {
+            console.log(res)
+            setServerData(res.data)
+        })
+        .catch(err => {
+            console.log(err)
+        })
+    }
+
+    // curl -X POST -H 'Authorization: Token 7a375b52bdc410eebbc878ed3e58b2e94a8cb607' 
+    // -H "Content-Type: application/json" 
+    // https://lambda-treasure-hunt.herokuapp.com/api/adv/status/
+    const viewStatus = () => {
+        axiosWithAuth()
+        .post('https://lambda-treasure-hunt.herokuapp.com/api/adv/status/')
+        .then(res => {
+            console.log(res)
+            setStatus(res.data)
+        })
+        .catch(err => {
+            console.log(err)
+        })
+    }
+
+    // curl -X POST -H 'Authorization: Token 7a375b52bdc410eebbc878ed3e58b2e94a8cb607' -H 
+    // "Content-Type: application/json" -d '{"name":"[NEW NAME]"}' 
+    // https://lambda-treasure-hunt.herokuapp.com/api/adv/change_name/
+
+    const changeName = () => {
+        axiosWithAuth()
+        .post('https://lambda-treasure-hunt.herokuapp.com/api/adv/status/', {"name": "[Nguyen Anh Vo]"})
+        .then(res => {
+            console.log(res)
+            setNameSuccess(true)
+        })
+        .catch(err => {
+            console.log(err)
+        })
+    }
+
     console.log("ROADS", roads)
 
     return (
@@ -97,12 +192,32 @@ function Mapping() {
             <div className='room-info'>
                 <h1>Legend</h1>
                 <p>Red is current position, Blue is visited rooms.</p>
-                <h1>Title</h1>
+                <h2>Title</h2>
                 {serverData.title && <p>{serverData.title}</p>}
+                <h2>Hero Info</h2>
+                {status.name && <p>
+                    {`Name: ${status.name}, 
+                    Gold: ${status.gold},
+                    Encumbrance/Strength/Speed: ${status.encumbrance}/${status.strength}/${status.speed}`}
+                </p>
+                }
+                {status.inventory && status.inventory.map(item => {
+                    return `${item} `
+                })}
+                <button onClick={viewStatus}>Check Status</button>
+                <h2>Name Changer</h2>
+                {nameSuccess ? <p>You have a name now, but at what cost?</p> : <p>A girl has no name.</p>}
+                <button onClick={changeName}>Change Your Name using 1000G</button>
                 <h2>Description</h2>
                 {serverData.description && <p>{serverData.description}</p>}
                 <h2>Items</h2>
                 {serverData.items && <ul>{serverData.items.map(item => <li>{item}</li>)}</ul>}
+                {serverData.items && <button onClick={pickup}>Pickup Items</button>}
+                {serverData.items && <button onClick={drop}>Drop Items</button>}
+                {serverData.items && <button onClick={sell}>Sell Items</button>}
+                {serverData.items && <button onClick={confirmSell}>Confirm Sell Items</button>}
+                <h2>Message</h2>
+                {serverData.messages && serverData.messages.map(message => <p>{message}</p>)}
                 <h2>Exits</h2>
                 {serverData.exits && serverData.exits.map(direction => {
                     if (direction === "n") {

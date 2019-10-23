@@ -20,7 +20,16 @@ function Mapping() {
     const [praySuccess, setPraySuccess] = useState(false)
 
     useEffect(() => {
-        // console.log("Start Code")
+        
+        // If we have an array of coordinates already in localStorage,
+        // it means this is not a new game
+
+        // if(localStorage.getItem('storedRooms').length > 0) {
+
+        //     // get the stored rooms and return it to array form
+        //     const storedRooms = JSON.parse(localStorage.getItem('storedRooms'))
+        //     setRooms(storedRooms)
+        // }
 
         // curl -X GET -H 'Authorization: Token 7a375b52bdc410eebbc878ed3e58b2e94a8cb607' 
         // https://lambda-treasure-hunt.herokuapp.com/api/adv/init/
@@ -180,7 +189,19 @@ function Mapping() {
             })
     }
 
-    // console.log("ROADS", roads)
+    // It should pull from localStorage any savedRooms and/or savedRoads
+    // parse them JSON.parse() and set them to state to be re-rendered
+    const saveData = () => {
+        console.log("SAVE DATA")
+
+    }
+
+    // Stores what we have inside rooms and roads inside localStorage
+    // We will need to stringify the data using JSON.stringify()
+    const loadData = () => {
+        console.log("LOAD DATA")
+        
+    }
 
     return (
         <Container>
@@ -198,7 +219,10 @@ function Mapping() {
             <Game>
                 <h1>Legend</h1>
                 <p>Red is current position, Blue is visited rooms.</p>
+                <button onClick={loadData}>Load Data</button>
+                <button onClick={saveData}>Save Progress</button>
                 <h2>Title</h2>
+                {serverData.coordinates && <p><b>Current Coordinates:</b> {serverData.coordinates}</p>}
                 {serverData.title && <p>{serverData.title}</p>}
                 {serverData.description && <p>{serverData.description}</p>}
                 <h2>Cooldown Time</h2>

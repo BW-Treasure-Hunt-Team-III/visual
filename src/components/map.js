@@ -26,6 +26,7 @@ function Mapping() {
     const [currentID, setCurrentID] = useState("")
     const [status, setStatus] = useState({})
     const [nameSuccess, setNameSuccess] = useState(false)
+    const [praySuccess, setPraySuccess] = useState(false)
 
     useEffect(() => {
         console.log("Start Code")
@@ -174,6 +175,21 @@ function Mapping() {
         })
     }
 
+    // curl -X POST -H 'Authorization: Token 7a375b52bdc410eebbc878ed3e58b2e94a8cb607' 
+    // -H "Content-Type: application/json" 
+    // https://lambda-treasure-hunt.herokuapp.com/api/adv/pray/
+    const pray = () => {
+        axiosWithAuth()
+        .post('https://lambda-treasure-hunt.herokuapp.com/api/adv/pray/')
+        .then(res => {
+            console.log(res)
+            setPraySuccess(true)
+        })
+        .catch(err => {
+            console.log(err)
+        })
+    }
+
     console.log("ROADS", roads)
 
     return (
@@ -194,28 +210,9 @@ function Mapping() {
                 <p>Red is current position, Blue is visited rooms.</p>
                 <h2>Title</h2>
                 {serverData.title && <p>{serverData.title}</p>}
-                <h2>Hero Info</h2>
-                {status.name && <p>
-                    {`Name: ${status.name}, 
-                    Gold: ${status.gold},
-                    Encumbrance/Strength/Speed: ${status.encumbrance}/${status.strength}/${status.speed}`}
-                </p>
-                }
-                {status.inventory && status.inventory.map(item => {
-                    return `${item} `
-                })}
-                <button onClick={viewStatus}>Check Status</button>
-                <h2>Name Changer</h2>
-                {nameSuccess ? <p>You have a name now, but at what cost?</p> : <p>A girl has no name.</p>}
-                <button onClick={changeName}>Change Your Name using 1000G</button>
-                <h2>Description</h2>
                 {serverData.description && <p>{serverData.description}</p>}
-                <h2>Items</h2>
-                {serverData.items && <ul>{serverData.items.map(item => <li>{item}</li>)}</ul>}
-                {serverData.items && <button onClick={pickup}>Pickup Items</button>}
-                {serverData.items && <button onClick={drop}>Drop Items</button>}
-                {serverData.items && <button onClick={sell}>Sell Items</button>}
-                {serverData.items && <button onClick={confirmSell}>Confirm Sell Items</button>}
+                <h2>Cooldown Time</h2>
+                {serverData.cooldown && <p>{serverData.cooldown} seconds</p>}
                 <h2>Message</h2>
                 {serverData.messages && serverData.messages.map(message => <p>{message}</p>)}
                 <h2>Exits</h2>
@@ -230,8 +227,28 @@ function Mapping() {
                         return <button onClick={() => travel({ "direction": "w" })}>Travel West</button>
                     }
                 })}
-                <h2>Cooldown Time</h2>
-                {serverData.cooldown && <p>{serverData.cooldown} seconds</p>}
+                <h2>Items</h2>
+                {serverData.items && <ul>{serverData.items.map(item => <li>{item}</li>)}</ul>}
+                {serverData.items && <button onClick={pickup}>Pickup Items</button>}
+                {serverData.items && <button onClick={drop}>Drop Items</button>}
+                {serverData.items && <button onClick={sell}>Sell Items</button>}
+                {serverData.items && <button onClick={confirmSell}>Confirm Sell Items</button>}
+                <h2>Hero Info</h2>
+                {status.name && <p>
+                    {`Name: ${status.name}, 
+                    Gold: ${status.gold},
+                    Encumbrance/Strength/Speed: ${status.encumbrance}/${status.strength}/${status.speed}`}
+                </p>
+                }
+                {status.inventory && status.inventory.map(item => {
+                    return `${item} `
+                })}
+                <button onClick={viewStatus}>Check Status</button>
+                <button onClick={pray}>Pray to the Gawdess</button>
+                {praySuccess && <p>The Gawdess is pleased. Now, get back to werk!</p>}
+                <h2>Name Changer</h2>
+                {nameSuccess ? <p>You have a name now, but at what cost?</p> : <p>A girl has no name.</p>}
+                <button onClick={changeName}>Change Your Name using 1000G</button>
             </div>
             
         </Container>

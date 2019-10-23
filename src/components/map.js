@@ -1,22 +1,13 @@
 import React, { useState, useEffect } from "react";
 import axios from 'axios'
 import axiosWithAuth from '../auth/auth';
-// import { Timer } from 'react-compound-timer';
-// import { coordinates, roadsCoords } from '../coordinates';
+import Timer from 'react-compound-timer';
 import styled from "styled-components";
 import {
     LineSeries,
     MarkSeries,
     FlexibleXYPlot,
 } from "react-vis";
-
-// Add a request interceptor - use your own API Keys
-// axios.interceptors.request.use(function (config) {
-//     const token = `Token df3a9ea1d4d5804d830fe93267242281cedd59ec`;
-//     config.headers.Authorization =  token;
-//     config.headers['Content-Type'] = "application/json";
-//     return config;
-// });
 
 function Mapping() {
     const [rooms, setRooms] = useState([]);
@@ -30,8 +21,6 @@ function Mapping() {
 
     useEffect(() => {
         console.log("Start Code")
-        // setRooms(coordinates)
-        // setRoads(roadsCoords)
 
         // curl -X GET -H 'Authorization: Token 7a375b52bdc410eebbc878ed3e58b2e94a8cb607' 
         // https://lambda-treasure-hunt.herokuapp.com/api/adv/init/
@@ -64,22 +53,23 @@ function Mapping() {
     const travel = direction => {
         console.log("Traveling", direction)
         axiosWithAuth()
-        .post('https://lambda-treasure-hunt.herokuapp.com/api/adv/move/', direction)
-        .then(res => {
-            console.log(res)
-            setServerData(res.data)
-            const xCoordinate = res.data.coordinates.slice(1, -1).split(',')[0]
-            const yCoordinate = res.data.coordinates.slice(1, -1).split(',')[1]
-            const newRoomCoordinate = { "x": xCoordinate, "y": yCoordinate }
-            setRooms([...rooms, newRoomCoordinate])
-            setRoads([...roads, ...currentRoomCoordinate, newRoomCoordinate])
-            setCurrentRoomCoordinate([newRoomCoordinate])
-            setCurrentID(res.data.room_id)
+            .post('https://lambda-treasure-hunt.herokuapp.com/api/adv/move/', direction)
+            .then(res => {
+                console.log(res)
+                console.log("cooldown", res.data.cooldown)
+                setServerData(res.data)
+                const xCoordinate = res.data.coordinates.slice(1, -1).split(',')[0]
+                const yCoordinate = res.data.coordinates.slice(1, -1).split(',')[1]
+                const newRoomCoordinate = { "x": xCoordinate, "y": yCoordinate }
+                setRooms([...rooms, newRoomCoordinate])
+                setRoads([...roads, ...currentRoomCoordinate, newRoomCoordinate])
+                setCurrentRoomCoordinate([newRoomCoordinate])
+                setCurrentID(res.data.room_id)
 
-        })
-        .catch(err => {
-            console.log(err)
-        })
+            })
+            .catch(err => {
+                console.log(err)
+            })
     }
 
     // curl -X POST -H 'Authorization: Token 7a375b52bdc410eebbc878ed3e58b2e94a8cb607' -H 
@@ -87,14 +77,14 @@ function Mapping() {
     // https://lambda-treasure-hunt.herokuapp.com/api/adv/take/
     const pickup = () => {
         axiosWithAuth()
-        .post('https://lambda-treasure-hunt.herokuapp.com/api/adv/take/', {"name":"treasure"})
-        .then(res => {
-            console.log(res)
-            setServerData(res.data)
-        })
-        .catch(err => {
-            console.log(err)
-        })
+            .post('https://lambda-treasure-hunt.herokuapp.com/api/adv/take/', { "name": "treasure" })
+            .then(res => {
+                console.log(res)
+                setServerData(res.data)
+            })
+            .catch(err => {
+                console.log(err)
+            })
     }
 
     // You may drop items with the following command:
@@ -103,14 +93,14 @@ function Mapping() {
     // https://lambda-treasure-hunt.herokuapp.com/api/adv/drop/
     const drop = () => {
         axiosWithAuth()
-        .post('https://lambda-treasure-hunt.herokuapp.com/api/adv/drop/', {"name":"treasure"})
-        .then(res => {
-            console.log(res)
-            setServerData(res.data)
-        })
-        .catch(err => {
-            console.log(err)
-        })
+            .post('https://lambda-treasure-hunt.herokuapp.com/api/adv/drop/', { "name": "treasure" })
+            .then(res => {
+                console.log(res)
+                setServerData(res.data)
+            })
+            .catch(err => {
+                console.log(err)
+            })
     }
 
     // Sell Treasure at Shop
@@ -119,14 +109,14 @@ function Mapping() {
     // https://lambda-treasure-hunt.herokuapp.com/api/adv/sell/
     const sell = () => {
         axiosWithAuth()
-        .post('https://lambda-treasure-hunt.herokuapp.com/api/adv/sell/', {"name":"treasure"})
-        .then(res => {
-            console.log(res)
-            setServerData(res.data)
-        })
-        .catch(err => {
-            console.log(err)
-        })
+            .post('https://lambda-treasure-hunt.herokuapp.com/api/adv/sell/', { "name": "treasure" })
+            .then(res => {
+                console.log(res)
+                setServerData(res.data)
+            })
+            .catch(err => {
+                console.log(err)
+            })
     }
 
     // curl -X POST -H 'Authorization: Token 7a375b52bdc410eebbc878ed3e58b2e94a8cb607' -H 
@@ -134,14 +124,14 @@ function Mapping() {
     // https://lambda-treasure-hunt.herokuapp.com/api/adv/sell/
     const confirmSell = () => {
         axiosWithAuth()
-        .post('https://lambda-treasure-hunt.herokuapp.com/api/adv/sell/', {"name":"treasure", "confirm":"yes"})
-        .then(res => {
-            console.log(res)
-            setServerData(res.data)
-        })
-        .catch(err => {
-            console.log(err)
-        })
+            .post('https://lambda-treasure-hunt.herokuapp.com/api/adv/sell/', { "name": "treasure", "confirm": "yes" })
+            .then(res => {
+                console.log(res)
+                setServerData(res.data)
+            })
+            .catch(err => {
+                console.log(err)
+            })
     }
 
     // curl -X POST -H 'Authorization: Token 7a375b52bdc410eebbc878ed3e58b2e94a8cb607' 
@@ -149,14 +139,14 @@ function Mapping() {
     // https://lambda-treasure-hunt.herokuapp.com/api/adv/status/
     const viewStatus = () => {
         axiosWithAuth()
-        .post('https://lambda-treasure-hunt.herokuapp.com/api/adv/status/')
-        .then(res => {
-            console.log(res)
-            setStatus(res.data)
-        })
-        .catch(err => {
-            console.log(err)
-        })
+            .post('https://lambda-treasure-hunt.herokuapp.com/api/adv/status/')
+            .then(res => {
+                console.log(res)
+                setStatus(res.data)
+            })
+            .catch(err => {
+                console.log(err)
+            })
     }
 
     // curl -X POST -H 'Authorization: Token 7a375b52bdc410eebbc878ed3e58b2e94a8cb607' -H 
@@ -165,14 +155,14 @@ function Mapping() {
 
     const changeName = () => {
         axiosWithAuth()
-        .post('https://lambda-treasure-hunt.herokuapp.com/api/adv/status/', {"name": "[Nguyen Anh Vo]"})
-        .then(res => {
-            console.log(res)
-            setNameSuccess(true)
-        })
-        .catch(err => {
-            console.log(err)
-        })
+            .post('https://lambda-treasure-hunt.herokuapp.com/api/adv/status/', { "name": "[Nguyen Anh Vo]" })
+            .then(res => {
+                console.log(res)
+                setNameSuccess(true)
+            })
+            .catch(err => {
+                console.log(err)
+            })
     }
 
     // curl -X POST -H 'Authorization: Token 7a375b52bdc410eebbc878ed3e58b2e94a8cb607' 
@@ -180,14 +170,14 @@ function Mapping() {
     // https://lambda-treasure-hunt.herokuapp.com/api/adv/pray/
     const pray = () => {
         axiosWithAuth()
-        .post('https://lambda-treasure-hunt.herokuapp.com/api/adv/pray/')
-        .then(res => {
-            console.log(res)
-            setPraySuccess(true)
-        })
-        .catch(err => {
-            console.log(err)
-        })
+            .post('https://lambda-treasure-hunt.herokuapp.com/api/adv/pray/')
+            .then(res => {
+                console.log(res)
+                setPraySuccess(true)
+            })
+            .catch(err => {
+                console.log(err)
+            })
     }
 
     console.log("ROADS", roads)
@@ -205,14 +195,17 @@ function Mapping() {
 
                 </FlexibleXYPlot>
             </ID>
-            <div className='room-info'>
+            <Game>
                 <h1>Legend</h1>
                 <p>Red is current position, Blue is visited rooms.</p>
                 <h2>Title</h2>
                 {serverData.title && <p>{serverData.title}</p>}
                 {serverData.description && <p>{serverData.description}</p>}
                 <h2>Cooldown Time</h2>
-                {serverData.cooldown && <p>{serverData.cooldown} seconds</p>}
+                Timer: <Timer>
+                    <Timer.Seconds />
+                </Timer>
+                {serverData.cooldown && <p>Cooldown: {serverData.cooldown} seconds</p>}
                 <h2>Message</h2>
                 {serverData.messages && serverData.messages.map(message => <p>{message}</p>)}
                 <h2>Exits</h2>
@@ -249,8 +242,8 @@ function Mapping() {
                 <h2>Name Changer</h2>
                 {nameSuccess ? <p>You have a name now, but at what cost?</p> : <p>A girl has no name.</p>}
                 <button onClick={changeName}>Change Your Name using 1000G</button>
-            </div>
-            
+            </Game>
+
         </Container>
     );
 }
@@ -270,6 +263,12 @@ const ID = styled.div`
   border: 5px dashed #fe50c2;
   padding-right: 40px;
   padding-top: 25px;
+  width:60%
+`;
+
+const Game = styled.div`
+  padding: 0 5% 0 3%;
+  width:40%
 `;
 
 

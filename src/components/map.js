@@ -243,16 +243,16 @@ function Mapping() {
     // -H "Content-Type: application/json" 
     // -d '{"proof":new_proof}' https://lambda-treasure-hunt.herokuapp.com/api/bc/mine/
 
-    const mineCoin = async () => {
+    const mineCoin = () => {
         //while (true) {
             //Get the last proof from the server
             getTheLastProof()
-            let response = lastProof;
+
             console.log('res', lastProof)
-            let newProof = proofOfWork(response)
+            // let newProof = proofOfWork(lastProof)
 
 
-            mine(newProof)
+            // mine(newProof)
         //}
     }
 

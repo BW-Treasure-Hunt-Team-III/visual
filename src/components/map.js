@@ -196,18 +196,9 @@ function Mapping() {
         console.log("SAVE DATA")
 
         if(rooms.length > 0 && roads.length > 0) {
-            if(localStorage.getItem("storedRooms") && localStorage.getItem("storedRoads")) {
-                const storedRooms =  JSON.parse(localStorage.getItem("storedRooms"))
-                const storedRoads = JSON.parse(localStorage.getItem("storedRoads"))
-
-                const fusedRooms = JSON.stringify(rooms.concat(storedRooms))
-                const fusedRoads = JSON.stringify(roads.concat(storedRoads))
-                console.log("FUSED ROOMS", fusedRooms, "FUSED ROADS", fusedRoads)
-
-                localStorage.setItem("storedRooms", fusedRooms)
-                localStorage.setItem("storedRoads", fusedRoads)
+                localStorage.setItem("storedRooms", JSON.stringify(rooms))
+                localStorage.setItem("storedRoads", JSON.stringify(roads))
                 setSaveSuccess(true)
-            }
         }
     }
 
@@ -220,11 +211,8 @@ function Mapping() {
             const storedRooms =  JSON.parse(localStorage.getItem("storedRooms"))
             const storedRoads = JSON.parse(localStorage.getItem("storedRoads"))
 
-            const fusedRooms = rooms.concat(storedRooms)
-            const fusedRoads = roads.concat(storedRoads)
-            
-            setRooms(fusedRooms)
-            setRoads(fusedRoads)
+            setRooms(storedRooms)
+            setRoads(storedRoads)
         }  
     }
 
@@ -245,8 +233,9 @@ function Mapping() {
                 <h1>Legend</h1>
                 <p>Red is current position, Blue is visited rooms.</p>
                 {saveSuccess ? <p>Game Saved Successfully.</p> : <p>Game not saved yet.</p>}
-                <button onClick={saveData}>Save Progress</button>
-                <button onClick={loadData}>Load Data</button>
+                <p><b>Warning:</b> Be sure to save current state before loading.</p>
+                <button onClick={saveData}>Save Current State</button>
+                <button onClick={loadData}>Load Previously Saved State</button>
 
                 <h2>Title</h2>
                 {serverData.coordinates && <p><b>Current Coordinates:</b> {serverData.coordinates}</p>}

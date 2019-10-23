@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from 'axios'
 import axiosWithAuth from '../auth/auth';
+import { Timer } from 'react-compound-timer';
 // import { coordinates, roadsCoords } from '../coordinates';
 import styled from "styled-components";
 import {
@@ -16,7 +17,6 @@ import {
 //     config.headers['Content-Type'] = "application/json";
 //     return config;
 // });
-
 
 function Mapping() {
     const [rooms, setRooms] = useState([]);
@@ -35,11 +35,11 @@ function Mapping() {
             .then(res => {
                 console.log(res.data)
                 setCurrentRoom(res.data)
-                // var streetAddress = addy.split(',')[0];
-                // Split by a comma
+
+                // Change (60, 60) into workable numbers
                 const xCoordinate = res.data.coordinates.slice(1, -1).split(',')[0]
                 const yCoordinate = res.data.coordinates.slice(1, -1).split(',')[1]
-                setRooms([...rooms, {"x": xCoordinate, "y": yCoordinate}])
+                setRooms([...rooms, { "x": xCoordinate, "y": yCoordinate }])
 
             })
             .catch(err => {
@@ -62,7 +62,7 @@ function Mapping() {
                     {roads.map(road => {
                         return <LineSeries data={roads} color="#59c2fe" />;
                     })}
-    
+
                 </FlexibleXYPlot>
             </ID>
             <div className='room-info'>
@@ -74,18 +74,21 @@ function Mapping() {
                 {currentRoom.items && <ul>{currentRoom.items.map(item => <li>{item}</li>)}</ul>}
                 <h2>Exits</h2>
                 {currentRoom.exits && currentRoom.exits.map(direction => {
-                    if(direction === "n") {
-                        return <button onClick={() => travel({"direction":"n"})}>Travel North</button>
-                    } else if(direction === "s") {
-                        return <button onClick={() => travel({"direction":"s"})}>Travel South</button>
-                    } else if(direction === "e") {
-                        return <button onClick={() => travel({"direction":"e"})}>Travel East</button>
+                    if (direction === "n") {
+                        return <button onClick={() => travel({ "direction": "n" })}>Travel North</button>
+                    } else if (direction === "s") {
+                        return <button onClick={() => travel({ "direction": "s" })}>Travel South</button>
+                    } else if (direction === "e") {
+                        return <button onClick={() => travel({ "direction": "e" })}>Travel East</button>
                     } else if (direction === "w") {
-                        return <button onClick={() => travel({"direction":"w"})}>Travel North</button>
+                        return <button onClick={() => travel({ "direction": "w" })}>Travel North</button>
                     }
                 })}
-
+                <h2>CoolDown Time</h2>
+                {currentRoom.cooldown && "TIMER"}
             </div>
+            <Timer initialTime={55000} direction="backward"></Timer>
+            
         </Container>
     );
 }

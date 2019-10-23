@@ -1,5 +1,6 @@
 import axios from 'axios';
 
+// Insert your own API key after Token
 export default() => {
     return axios.create({
         headers: {

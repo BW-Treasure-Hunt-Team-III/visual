@@ -21,17 +21,16 @@ function Mapping() {
     const [praySuccess, setPraySuccess] = useState(false)
     const [saveSuccess, setSaveSuccess] = useState(false)
 
+    // 63, 61 for Wishing Well
+    // Room 2 is the wishing well
+    // Aaron API: c3121365839fda19486243304dd555da3b81a6d2
+    // Lidiia API: 636d48a60803e8f600139e8a47d731a28141474b
+
+
     useEffect(() => {
         
         // If we have an array of coordinates already in localStorage,
         // it means this is not a new game
-
-        // if(localStorage.getItem('storedRooms').length > 0) {
-
-        //     // get the stored rooms and return it to array form
-        //     const storedRooms = JSON.parse(localStorage.getItem('storedRooms'))
-        //     setRooms(storedRooms)
-        // }
 
         // curl -X GET -H 'Authorization: Token 7a375b52bdc410eebbc878ed3e58b2e94a8cb607' 
         // https://lambda-treasure-hunt.herokuapp.com/api/adv/init/
@@ -170,7 +169,7 @@ function Mapping() {
 
     const changeName = () => {
         axiosWithAuth()
-            .post('https://lambda-treasure-hunt.herokuapp.com/api/adv/status/', { "name": "[Nguyen Anh Vo]" })
+            .post('https://lambda-treasure-hunt.herokuapp.com/api/adv/status/', { "name": "Nguyen Anh Vo" })
             .then(res => {
                 console.log(res)
                 setNameSuccess(true)
@@ -223,6 +222,23 @@ function Mapping() {
             setSpecialRooms(storedSpecial)
         }  
     }
+
+    // curl -X POST -H 'Authorization: Token 7a375b52bdc410eebbc878ed3e58b2e94a8cb607' 
+    // -H "Content-Type: application/json" -d '{"name":"[NAME OF ITEM OR PLAYER]"}' 
+    // https://lambda-treasure-hunt.herokuapp.com/api/adv/examine/
+    const examine = () => {
+        console.log("examine")
+        axiosWithAuth()
+            .post('https://lambda-treasure-hunt.herokuapp.com/api/adv/examine/', {"name":"Wishing Well"} )
+            .then(res => {
+                console.log(res.data.description)
+            })
+            .catch(err => {
+                console.log(err)
+            })
+    }
+
+    
 
     return (
         <Container>
@@ -278,6 +294,7 @@ function Mapping() {
                 {serverData.items && <button onClick={drop}>Drop Items</button>}
                 {serverData.items && <button onClick={sell}>Sell Items</button>}
                 {serverData.items && <button onClick={confirmSell}>Confirm Sell Items</button>}
+                <button onClick={examine}>Examine Wishing Well</button>
 
                 <h2>Hero Info</h2>
                 {status.name && <p>

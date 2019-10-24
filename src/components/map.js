@@ -63,6 +63,7 @@ function Mapping() {
     // https://lambda-treasure-hunt.herokuapp.com/api/adv/move/
     const travel = direction => {
         // console.log("Traveling", direction)
+        // Refactoring to not add to Rooms if coordinate is already in there
         axiosWithAuth()
             .post('https://lambda-treasure-hunt.herokuapp.com/api/adv/move/', direction)
             .then(res => {

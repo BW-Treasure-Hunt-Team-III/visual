@@ -73,7 +73,20 @@ function Mapping() {
                 const yCoordinate = res.data.coordinates.slice(1, -1).split(',')[1]
                 const newRoomCoordinate = { "x": xCoordinate, "y": yCoordinate }
                 setRooms([...rooms, newRoomCoordinate])
-                setRoads([...roads, ...currentRoomCoordinate, newRoomCoordinate])
+
+                {serverData.exits && serverData.exits.map(direction => {
+                    if (direction === "n") {
+                        setRoads([...roads, {"x": xCoordinate, "y": yCoordinate+1}])
+                    } else if (direction === "s") {
+                        setRoads([...roads, {"x": xCoordinate, "y": yCoordinate-1}])
+                    } else if (direction === "e") {
+                        setRoads([...roads, {"x": xCoordinate+1, "y": yCoordinate}])
+                    } else if (direction === "w") {
+                        setRoads([...roads, {"x": xCoordinate-1, "y": yCoordinate}])
+                    }
+                })}
+
+                // setRoads([...roads, ...currentRoomCoordinate, newRoomCoordinate])
                 setCurrentRoomCoordinate([newRoomCoordinate])
                 setCurrentID(res.data.room_id)
 

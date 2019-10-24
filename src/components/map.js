@@ -12,15 +12,25 @@ import {
 function Mapping() {
     const [rooms, setRooms] = useState([]);
     const [roads, setRoads] = useState([]);
+    const [specialRooms, setSpecialRooms] = useState([])
     const [serverData, setServerData] = useState([])
     const [currentRoomCoordinate, setCurrentRoomCoordinate] = useState([])
     const [currentID, setCurrentID] = useState("")
     const [status, setStatus] = useState({})
     const [nameSuccess, setNameSuccess] = useState(false)
     const [praySuccess, setPraySuccess] = useState(false)
+    const [saveSuccess, setSaveSuccess] = useState(false)
+
+    // 63, 61 for Wishing Well
+    // Room 2 is the wishing well
+    // Aaron API: c3121365839fda19486243304dd555da3b81a6d2
+    // Lidiia API: 636d48a60803e8f600139e8a47d731a28141474b
+
 
     useEffect(() => {
-        // console.log("Start Code")
+        
+        // If we have an array of coordinates already in localStorage,
+        // it means this is not a new game
 
         // curl -X GET -H 'Authorization: Token 7a375b52bdc410eebbc878ed3e58b2e94a8cb607' 
         // https://lambda-treasure-hunt.herokuapp.com/api/adv/init/
@@ -52,11 +62,11 @@ function Mapping() {
     // https://lambda-treasure-hunt.herokuapp.com/api/adv/move/
     const travel = direction => {
         // console.log("Traveling", direction)
+        // Refactoring to not add to Rooms if coordinate is already in there
         axiosWithAuth()
             .post('https://lambda-treasure-hunt.herokuapp.com/api/adv/move/', direction)
             .then(res => {
                 console.log(res)
-                console.log("cooldown", res.data.cooldown)
                 setServerData(res.data)
                 const xCoordinate = res.data.coordinates.slice(1, -1).split(',')[0]
                 const yCoordinate = res.data.coordinates.slice(1, -1).split(',')[1]
@@ -65,6 +75,10 @@ function Mapping() {
                 setRoads([...roads, ...currentRoomCoordinate, newRoomCoordinate])
                 setCurrentRoomCoordinate([newRoomCoordinate])
                 setCurrentID(res.data.room_id)
+
+                if(res.data.title === "Shop") {
+                    setSpecialRooms([...specialRooms, newRoomCoordinate])
+                }
 
             })
             .catch(err => {
@@ -155,7 +169,7 @@ function Mapping() {
 
     const changeName = () => {
         axiosWithAuth()
-            .post('https://lambda-treasure-hunt.herokuapp.com/api/adv/status/', { "name": "[Nguyen Anh Vo]" })
+            .post('https://lambda-treasure-hunt.herokuapp.com/api/adv/status/', { "name": "Nguyen Anh Vo" })
             .then(res => {
                 console.log(res)
                 setNameSuccess(true)
@@ -180,7 +194,51 @@ function Mapping() {
             })
     }
 
-    // console.log("ROADS", roads)
+    // It should pull from localStorage any savedRooms and/or savedRoads
+    // parse them JSON.parse() and set them to state to be re-rendered
+    const saveData = () => {
+        console.log("SAVE DATA")
+
+        if(rooms.length > 0 && roads.length > 0) {
+                localStorage.setItem("storedRooms", JSON.stringify(rooms))
+                localStorage.setItem("storedRoads", JSON.stringify(roads))
+                localStorage.setItem("storedSpecial", JSON.stringify(specialRooms))
+                setSaveSuccess(true)
+        }
+    }
+
+    // Stores what we have inside rooms and roads inside localStorage
+    // We will need to stringify the data using JSON.stringify()
+    const loadData = () => {
+        console.log("LOAD DATA")
+
+        if(localStorage.getItem("storedRooms") && localStorage.getItem("storedRoads")) {
+            const storedRooms =  JSON.parse(localStorage.getItem("storedRooms"))
+            const storedRoads = JSON.parse(localStorage.getItem("storedRoads"))
+            const storedSpecial = JSON.parse(localStorage.getItem("storedSpecial"))
+
+            setRooms(storedRooms)
+            setRoads(storedRoads)
+            setSpecialRooms(storedSpecial)
+        }  
+    }
+
+    // curl -X POST -H 'Authorization: Token 7a375b52bdc410eebbc878ed3e58b2e94a8cb607' 
+    // -H "Content-Type: application/json" -d '{"name":"[NAME OF ITEM OR PLAYER]"}' 
+    // https://lambda-treasure-hunt.herokuapp.com/api/adv/examine/
+    const examine = () => {
+        console.log("examine")
+        axiosWithAuth()
+            .post('https://lambda-treasure-hunt.herokuapp.com/api/adv/examine/', {"name":"Wishing Well"} )
+            .then(res => {
+                console.log(res.data.description)
+            })
+            .catch(err => {
+                console.log(err)
+            })
+    }
+
+    
 
     return (
         <Container>
@@ -188,6 +246,7 @@ function Mapping() {
                 <FlexibleXYPlot width={500} height={500}>
                     <MarkSeries data={rooms} />
                     {serverData.room_id === currentID && <MarkSeries data={currentRoomCoordinate} color="red" />}
+                    {specialRooms && <MarkSeries data={specialRooms} color="purple" size="10"/>}
                     {/* {roads.map(road => {
                         return <LineSeries data={road} color="black" style={{ fill: 'none' }}/>;
                     })} */}
@@ -198,7 +257,13 @@ function Mapping() {
             <Game>
                 <h1>Legend</h1>
                 <p>Red is current position, Blue is visited rooms.</p>
+                {saveSuccess ? <p>Game Saved Successfully.</p> : <p>Game not saved yet.</p>}
+                <p><b>Warning:</b> Be sure to save current state before loading.</p>
+                <button onClick={saveData}>Save Current State</button>
+                <button onClick={loadData}>Load Previously Saved State</button>
+
                 <h2>Title</h2>
+                {serverData.coordinates && <p><b>Current Coordinates:</b> {serverData.coordinates}</p>}
                 {serverData.title && <p>{serverData.title}</p>}
                 {serverData.description && <p>{serverData.description}</p>}
                 <h2>Cooldown Time</h2>
@@ -206,8 +271,10 @@ function Mapping() {
                     <Timer.Seconds />
                 </Timer>
                 {serverData.cooldown && <p>Cooldown: {serverData.cooldown} seconds</p>}
+
                 <h2>Message</h2>
                 {serverData.messages && serverData.messages.map(message => <p>{message}</p>)}
+
                 <h2>Exits</h2>
                 {serverData.exits && serverData.exits.map(direction => {
                     if (direction === "n") {
@@ -220,12 +287,15 @@ function Mapping() {
                         return <button onClick={() => travel({ "direction": "w" })}>Travel West</button>
                     }
                 })}
+
                 <h2>Items</h2>
                 {serverData.items && <ul>{serverData.items.map(item => <li>{item}</li>)}</ul>}
                 {serverData.items && <button onClick={pickup}>Pickup Items</button>}
                 {serverData.items && <button onClick={drop}>Drop Items</button>}
                 {serverData.items && <button onClick={sell}>Sell Items</button>}
                 {serverData.items && <button onClick={confirmSell}>Confirm Sell Items</button>}
+                <button onClick={examine}>Examine Wishing Well</button>
+
                 <h2>Hero Info</h2>
                 {status.name && <p>
                     {`Name: ${status.name}, 
@@ -239,6 +309,7 @@ function Mapping() {
                 <button onClick={viewStatus}>Check Status</button>
                 <button onClick={pray}>Pray to the Gawdess</button>
                 {praySuccess && <p>The Gawdess is pleased. Now, get back to werk!</p>}
+                
                 <h2>Name Changer</h2>
                 {nameSuccess ? <p>You have a name now, but at what cost?</p> : <p>A girl has no name.</p>}
                 <button onClick={changeName}>Change Your Name using 1000G</button>

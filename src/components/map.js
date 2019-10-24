@@ -22,11 +22,8 @@ function Mapping() {
     const [saveSuccess, setSaveSuccess] = useState(false)
 
     // 63, 61 for Wishing Well
-    // Room 2 is the wishing well
-    // Aaron API: c3121365839fda19486243304dd555da3b81a6d2
-    // Lidiia API: 636d48a60803e8f600139e8a47d731a28141474b
-
-
+    // 59,60 room id2 is the Shop
+   
     useEffect(() => {
         
         // If we have an array of coordinates already in localStorage,
@@ -169,10 +166,22 @@ function Mapping() {
 
     const changeName = () => {
         axiosWithAuth()
-            .post('https://lambda-treasure-hunt.herokuapp.com/api/adv/status/', { "name": "Nguyen Anh Vo" })
+            .post('https://lambda-treasure-hunt.herokuapp.com/api/adv/change_name/', { "name": "Nguyen Vo" })
             .then(res => {
                 console.log(res)
-                setNameSuccess(true)
+                setNameSuccess(!nameSuccess)
+            })
+            .catch(err => {
+                console.log(err)
+            })
+    }
+
+    const confirmNameChange = () => {
+        axiosWithAuth()
+            .post('https://lambda-treasure-hunt.herokuapp.com/api/adv/change_name/', { "name": "Nguyen Vo", 'confirm':'aye'})
+            .then(res => {
+                console.log(res)
+                setNameSuccess(!nameSuccess)
             })
             .catch(err => {
                 console.log(err)
@@ -237,8 +246,6 @@ function Mapping() {
                 console.log(err)
             })
     }
-
-    
 
     return (
         <Container>
@@ -311,8 +318,9 @@ function Mapping() {
                 {praySuccess && <p>The Gawdess is pleased. Now, get back to werk!</p>}
                 
                 <h2>Name Changer</h2>
-                {nameSuccess ? <p>You have a name now, but at what cost?</p> : <p>A girl has no name.</p>}
-                <button onClick={changeName}>Change Your Name using 1000G</button>
+                {nameSuccess ? <p>Confirm your decision.</p> : <p>A girl is no one.</p>}
+                {nameSuccess ? <button onClick={confirmNameChange}>Confirm Name Change</button>
+                : <button onClick={changeName}>Change Your Name using 1000G</button>}
             </Game>
 
         </Container>
